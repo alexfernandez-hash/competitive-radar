@@ -1,15 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Competitive Radar — OneTable</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competitive Radar — OneTable</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#1a73e8;--blue-l:#e8f0fe;--orange:#fa7b17;--orange-l:#fde8d0;--purple:#a142f4;--purple-l:#f3e8fd;--green:#34a853;--green-l:#e6f4ea;--teal:#00897b;--teal-l:#e0f2f1;--ink:#202124;--ink2:#3c4043;--ink3:#5f6368;--ink4:#80868b;--surf:#fff;--surf2:#f8f9fa;--surf3:#f1f3f4;--bdr:#dadce0;--bdr2:#e8eaed;--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{font-family:var(--sans);background:var(--surf2);color:var(--ink);font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1060px;margin:0 auto;padding:0 0 3rem}
+.topbar{background:#fff;border-bottom:1px solid var(--bdr);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(60,64,67,.1)}
+.logo{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
+.apptitle{font-size:16px;font-weight:500;color:var(--ink);margin-left:10px}
+.appsub{font-size:11px;color:var(--ink4);margin-left:8px}
+.metaright{font-size:11px;color:var(--ink4)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;padding:16px 24px 0}
+.chip{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;border:1px solid var(--bdr);background:#fff;font-size:12px;font-weight:500;color:var(--ink3)}
+.chip.mine{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.cdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nav{background:#fff;border-bottom:1px solid var(--bdr);padding:0 24px;display:flex;position:sticky;top:60px;z-index:99}
+.ntab{padding:14px 18px;font-size:13px;font-weight:500;color:var(--ink3);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s}
+.ntab:hover{color:var(--blue);background:var(--blue-l)}
+.ntab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.panel{display:none}.panel.on{display:block}
+.page{padding:20px 24px}
+.sec{font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.card{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:18px 22px;box-shadow:0 1px 2px rgba(60,64,67,.08)}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.g2c{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.sc{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:16px;text-align:center;box-shadow:0 1px 2px rgba(60,64,67,.08)}
+.sc.mine{border:2px solid var(--blue);background:var(--blue-l)}
+.sc-badge{display:inline-block;font-size:9px;font-weight:600;padding:2px 8px;border-radius:99px;margin-bottom:9px;letter-spacing:.05em;text-transform:uppercase}
+.sc-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:12px}
+.sc-ring{width:72px;height:72px;margin:0 auto 10px;position:relative}
+.sc-ring svg{transform:rotate(-90deg)}
+.sc-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500}
+.sc-rank{font-size:10px;color:var(--ink4)}
+.cat-title{font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--bdr2)}
+.cbar{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.cbl{font-size:12px;width:72px;flex-shrink:0;color:var(--ink3)}
+.cbl.mine{font-weight:600}
+.cbtrack{flex:1;height:7px;background:var(--surf3);border-radius:4px;overflow:hidden}
+.cbfill{height:100%;border-radius:4px}
+.cbval{font-size:11px;color:var(--ink4);width:28px;text-align:right}
+.mx-wrap{overflow-x:auto}
+table.mx{width:100%;border-collapse:collapse;font-size:12px}
+table.mx th{font-size:10px;font-weight:500;color:var(--ink3);padding:9px 12px;border-bottom:1px solid var(--bdr);text-align:left;background:var(--surf2);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+table.mx th.mh{color:var(--blue);background:var(--blue-l)}
+table.mx td{padding:8px 12px;border-bottom:1px solid var(--bdr2);vertical-align:middle}
+table.mx tr:last-child td{border-bottom:none}
+table.mx tr:hover td{background:var(--surf2)}
+table.mx tr:hover td.mc{background:#dce8fd}
+table.mx td.feat{font-size:11px;color:var(--ink3);background:var(--surf2);border-right:1px solid var(--bdr2);min-width:185px;position:sticky;left:0}
+table.mx td.cat{font-size:10px;font-weight:600;color:var(--ink3);background:var(--surf3);padding:6px 12px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--bdr)}
+table.mx td.mc{background:#f0f5ff}
+.dots{display:flex;gap:3px;align-items:center}
+.d{width:8px;height:8px;border-radius:50%;background:var(--bdr2)}
+.sn{font-size:10px;color:var(--ink4);margin-left:7px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.pc{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(60,64,67,.08)}
+.pc.mine{border:2px solid var(--blue);background:var(--blue-l)}
+.pc-co{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;display:flex;align-items:center;gap:6px;color:var(--ink3)}
+.pc-model{font-size:10px;color:var(--ink4);margin-bottom:8px;font-style:italic}
+.plan{border-top:1px solid var(--bdr2);padding:9px 0 3px}
+.plan-name{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:2px}
+.plan-price{font-size:19px;font-weight:500;color:var(--ink)}
+.plan-period{font-size:10px;color:var(--ink4);margin-left:3px}
+.plan-note{font-size:10px;color:var(--ink4);margin-top:4px;line-height:1.5}
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gc{background:#fff;border:1px solid var(--bdr);border-left-width:3px;border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(60,64,67,.08);display:flex;flex-direction:column;gap:7px}
+.gc.high{border-left-color:#ea4335}.gc.medium{border-left-color:#fbbc04}.gc.low{border-left-color:#34a853}
+.gc-top{display:flex;align-items:flex-start;gap:9px}
+.gc-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.gc-tag{font-size:9px;font-weight:600;padding:2px 7px;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;display:inline-block;margin-bottom:4px}
+.gc-tag.high{background:#fce8e6;color:#c5221f}.gc-tag.medium{background:#fef7e0;color:#b06000}.gc-tag.low{background:#e6f4ea;color:#137333}
+.gc-title{font-size:12px;font-weight:500;color:var(--ink);line-height:1.4}
+.gc-body{font-size:11px;color:var(--ink3);line-height:1.6}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.tc{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(60,64,67,.08)}
+.tc.mine{border:2px solid var(--blue);background:var(--blue-l)}
+.tc-co{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;display:flex;align-items:center;gap:6px;color:var(--ink3)}
+.tc-vp{font-size:11px;font-weight:500;color:var(--ink);margin-bottom:5px;line-height:1.4;font-style:italic}
+.tc-aud{font-size:10px;color:var(--ink3);margin-bottom:10px;line-height:1.5}
+.srow{margin-bottom:7px}
+.slbls{display:flex;justify-content:space-between;font-size:9px;color:var(--ink4);margin-bottom:3px}
+.strk{height:5px;background:var(--surf3);border-radius:3px;overflow:hidden}
+.sfill{height:100%;border-radius:3px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.tag{font-size:9px;padding:2px 7px;border-radius:99px;background:var(--surf3);color:var(--ink4);border:1px solid var(--bdr2)}
+.xbar{display:flex;gap:9px;padding:18px 24px 0;flex-wrap:wrap}
+.xb{padding:8px 18px;font-size:13px;font-weight:500;font-family:var(--sans);border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
+.xb.fill{background:var(--blue);color:#fff;border:none}
+.xb.fill:hover{background:#1557b0}
+.xb.out{background:#fff;color:var(--blue);border:1px solid var(--blue)}
+.xb.out:hover{background:var(--blue-l)}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div style="display:flex;align-items:center">
+    <div class="logo">OT</div>
+    <span class="apptitle">Competitive Radar</span>
+    <span class="appsub">onetable.org · May 2026</span>
+  </div>
+  <div class="metaright">5 products · 18 features · 4 categories</div>
+</div>
+<div class="chips" id="chips"></div>
+<div class="nav">
+  <button class="ntab active" onclick="sw('overview',this)">Overview</button>
+  <button class="ntab" onclick="sw('matrix',this)">Feature matrix</button>
+  <button class="ntab" onclick="sw('pricing',this)">Pricing</button>
+  <button class="ntab" onclick="sw('gaps',this)">Gaps</button>
+  <button class="ntab" onclick="sw('tone',this)">Tone</button>
+</div>
+<div class="panel on" id="panel-overview">
+  <div class="page">
+    <div class="sec">Final scores</div>
+    <div class="g5" id="scorecards"></div>
+    <div class="g2">
+      <div class="card"><div class="sec">Overall comparison</div><div style="position:relative;height:230px"><canvas id="barC"></canvas></div></div>
+      <div class="card"><div class="sec">Capability radar</div><div style="position:relative;height:230px"><canvas id="radC"></canvas></div></div>
+    </div>
+    <div class="card"><div class="sec">Score by category</div><div class="g2c" id="catbars"></div></div>
+  </div>
+</div>
+<div class="panel" id="panel-matrix">
+  <div class="page">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="mx-wrap"><table class="mx"><thead id="mxhead"></thead><tbody id="mxbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+<div class="panel" id="panel-pricing"><div class="page"><div class="pgrid" id="pgrid"></div></div></div>
+<div class="panel" id="panel-gaps"><div class="page"><div class="ggrid" id="ggrid"></div></div></div>
+<div class="panel" id="panel-tone"><div class="page"><div class="tgrid" id="tgrid"></div></div></div>
+<div class="xbar">
+  <button class="xb fill" onclick="exportMd()">&#8595; Export Markdown</button>
+  <button class="xb out" id="copybtn" onclick="copyNotion()">&#10064; Copy for Notion</button>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const C={OneTable:'#1a73e8',EatWith:'#fa7b17',DayOfUs:'#a142f4',Strangrs:'#34a853',Timeleft:'#00897b'};
+const CL={OneTable:'#e8f0fe',EatWith:'#fde8d0',DayOfUs:'#f3e8fd',Strangrs:'#e6f4ea',Timeleft:'#e0f2f1'};
+const P=[{l:'OneTable',m:true},{l:'EatWith',m:false},{l:'DayOfUs',m:false},{l:'Strangrs',m:false},{l:'Timeleft',m:false}];
+const F=[
+  {c:'Community & Mission',n:'Identity / culture-specific focus',s:{OneTable:5,EatWith:1,DayOfUs:1,Strangrs:1,Timeleft:1}},
+  {c:'Community & Mission',n:'Nonprofit / grant-funded model',s:{OneTable:5,EatWith:0,DayOfUs:0,Strangrs:0,Timeleft:0}},
+  {c:'Community & Mission',n:'Host financial subsidy per guest',s:{OneTable:5,EatWith:0,DayOfUs:0,Strangrs:0,Timeleft:0}},
+  {c:'Community & Mission',n:'Ritual & tradition onboarding',s:{OneTable:5,EatWith:2,DayOfUs:0,Strangrs:0,Timeleft:0}},
+  {c:'Community & Mission',n:'B2B white-label SaaS platform',s:{OneTable:4,EatWith:1,DayOfUs:0,Strangrs:0,Timeleft:0}},
+  {c:'Matching & Events',n:'Personality-based algorithm matching',s:{OneTable:2,EatWith:1,DayOfUs:4,Strangrs:5,Timeleft:4}},
+  {c:'Matching & Events',n:'Weekly recurring structured events',s:{OneTable:3,EatWith:2,DayOfUs:4,Strangrs:5,Timeleft:5}},
+  {c:'Matching & Events',n:'Host-driven dinner model',s:{OneTable:5,EatWith:5,DayOfUs:0,Strangrs:0,Timeleft:0}},
+  {c:'Matching & Events',n:'Icebreaker / conversation tools',s:{OneTable:3,EatWith:0,DayOfUs:4,Strangrs:5,Timeleft:3}},
+  {c:'Matching & Events',n:'Post-event friend connection',s:{OneTable:3,EatWith:2,DayOfUs:4,Strangrs:3,Timeleft:3}},
+  {c:'Matching & Events',n:'Multiple event formats',s:{OneTable:1,EatWith:3,DayOfUs:2,Strangrs:2,Timeleft:5}},
+  {c:'Platform & Reach',n:'Mobile app (iOS & Android)',s:{OneTable:3,EatWith:3,DayOfUs:4,Strangrs:4,Timeleft:5}},
+  {c:'Platform & Reach',n:'Global city coverage (50+ cities)',s:{OneTable:3,EatWith:4,DayOfUs:3,Strangrs:2,Timeleft:5}},
+  {c:'Platform & Reach',n:'Multi-age segment product lines',s:{OneTable:4,EatWith:1,DayOfUs:1,Strangrs:1,Timeleft:2}},
+  {c:'Platform & Reach',n:'Impact reporting / metrics',s:{OneTable:5,EatWith:1,DayOfUs:1,Strangrs:1,Timeleft:2}},
+  {c:'Monetization',n:'Subscription pricing model',s:{OneTable:0,EatWith:0,DayOfUs:4,Strangrs:4,Timeleft:4}},
+  {c:'Monetization',n:'Pay-per-event option',s:{OneTable:1,EatWith:5,DayOfUs:4,Strangrs:4,Timeleft:2}},
+  {c:'Monetization',n:'Donation / philanthropy revenue',s:{OneTable:5,EatWith:0,DayOfUs:0,Strangrs:0,Timeleft:0}},
+];
+const PRICING=[
+  {co:'OneTable',m:true,model:'Nonprofit · donation-funded',plans:[{n:'Guest',p:'Free',per:'',note:'Attending is free. Pay own food at venue.'},{n:'Host base',p:'~$10',per:'/guest',note:'Nourishment subsidy, up to ~$150/dinner.'},{n:'Nourishment+',p:'Up to $300',per:'/event',note:'Enhanced subsidy for special dinners.'}]},
+  {co:'EatWith',m:false,model:'Marketplace · commission',plans:[{n:'Guest',p:'Varies',per:'/event',note:'Host price + 20-30% EatWith fee.'},{n:'Host',p:'Free',per:'to list',note:'Keep 100% of set price.'}]},
+  {co:'DayOfUs',m:false,model:'Ticket + subscription',plans:[{n:'Single seat',p:'$12.99',per:'/event',note:'Pay per dinner. Food separate.'},{n:'Subscription',p:'$15.99',per:'/mo',note:'Unlimited bookings.'}]},
+  {co:'Strangrs',m:false,model:'Ticket + membership',plans:[{n:'Single dinner',p:'€10.99',per:'/event',note:'Or 3-pack for €19.99.'},{n:'Gold member',p:'€15.99',per:'/mo',note:'Unlimited + partner perks.'}]},
+  {co:'Timeleft',m:false,model:'Subscription',plans:[{n:'Monthly',p:'~$15-25',per:'/mo',note:'Varies by city.'},{n:'Quarterly',p:'~$40-65',per:'/3mo',note:'Single tickets in select markets.'}]},
+];
+const GAPS=[
+  {pr:'high',ic:'🔑',t:'Host subsidy model is a unique structural moat',b:'No competitor pays its hosts. Expanding to adjacent communities is wide open.'},
+  {pr:'high',ic:'✨',t:'Ritual + social dining intersection unclaimed',b:'Commercial players focus on strangers only. OneTable owns intentionality with zero competition.'},
+  {pr:'high',ic:'🏢',t:'B2B SaaS white-label platform underleveraged',b:'Synagogues, JCCs, Hillels, and secular orgs are untapped scale and revenue levers.'},
+  {pr:'medium',ic:'🎯',t:'Matching transparency gap vs. competitors',b:'DayOfUs and Strangrs surface criteria openly. A lightweight compatibility layer could close this.'},
+  {pr:'medium',ic:'📱',t:'Mobile app experience lags Timeleft and DayOfUs',b:'Polished native apps drive retention. App redesign is a high-ROI investment.'},
+  {pr:'medium',ic:'🤝',t:'Post-dinner friendship tools missing everywhere',b:'All 5 products drop off after events. Continuity tools would improve mission KPIs.'},
+  {pr:'low',ic:'👥',t:'50ish / midlife segment entirely uncontested',b:'GetTogether has zero competitors in the 50+ space. Loyal, high-LTV cohort.'},
+];
+const TONE=[
+  {co:'OneTable',m:true,vp:'"One dinner is just the beginning"',aud:'Jewish adults 21-39 and 50ish. US/Canada. Partially unaffiliated.',f:40,t:15,tags:['mission-driven','warm','inclusive','spiritual','community-first']},
+  {co:'EatWith',m:false,vp:'"Authentic local food experiences"',aud:'Gourmet travelers + food lovers. 130+ countries.',f:45,t:25,tags:['foodie','cultural','aspirational','travel-focused']},
+  {co:'DayOfUs',m:false,vp:'"Meet amazing strangers, every week"',aud:'Millennials & Gen Z, North America + Asia.',f:20,t:35,tags:['casual','youthful','tech-forward','anti-dating']},
+  {co:'Strangrs',m:false,vp:'"Dine with 5 unique strangers"',aud:'Urban French speakers 26-45, expanding to English.',f:35,t:30,tags:['real-life','European','romantic-adjacent','IRL-first']},
+  {co:'Timeleft',m:false,vp:'"Turn strangers into friends"',aud:'Urban professionals 25-40, 52 countries.',f:30,t:20,tags:['warm','optimistic','global','multi-format']},
+];
+const CATS=[...new Set(F.map(f=>f.c))];
+function catScore(p,cat){const fs=F.filter(f=>f.c===cat);return Math.round(fs.reduce((s,f)=>s+(f.s[p]||0),0)/(fs.length*5)*100)}
+function overall(p){return Math.round(F.reduce((s,f)=>s+(f.s[p]||0),0)/(F.length*5)*100)}
+function sw(id,btn){document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));btn.classList.add('active');document.getElementById('panel-'+id).classList.add('on')}
+function init(){
+  const ranked=[...P].map(p=>({...p,s:overall(p.l)})).sort((a,b)=>b.s-a.s);
+  const rankMap={};ranked.forEach((p,i)=>rankMap[p.l]=i+1);
+  document.getElementById('chips').innerHTML=P.map(p=>'<div class="chip '+(p.m?'mine':'')+'"><div class="cdot" style="background:'+C[p.l]+'"></div>'+p.l+(p.m?' · yours':'')+'</div>').join('');
+  document.getElementById('scorecards').innerHTML=P.map(p=>{
+    const sc=overall(p.l),col=C[p.l],lt=CL[p.l],r=29,circ=2*Math.PI*r,dash=(sc/100)*circ;
+    return '<div class="sc '+(p.m?'mine':'')+'"><span class="sc-badge" style="background:'+(p.m?col:lt)+';color:'+(p.m?'#fff':col)+'">'+(p.m?'your product':'competitor')+'</span><div class="sc-name">'+p.l+'</div><div class="sc-ring"><svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="'+r+'" fill="none" stroke="'+lt+'" stroke-width="6"/><circle cx="36" cy="36" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="6" stroke-dasharray="'+dash.toFixed(1)+' '+circ.toFixed(1)+'" stroke-linecap="round"/></svg><div class="sc-num" style="color:'+col+'">'+sc+'</div></div><div class="sc-rank">#'+rankMap[p.l]+' of 5 &nbsp;·&nbsp; '+sc+'/100</div></div>';
+  }).join('');
+  new Chart(document.getElementById('barC'),{type:'bar',data:{labels:P.map(p=>p.l),datasets:[{data:P.map(p=>overall(p.l)),backgroundColor:P.map(p=>CL[p.l]),borderColor:P.map(p=>C[p.l]),borderWidth:2,borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Score: '+c.raw+'/100'},backgroundColor:'#fff',titleColor:'#202124',bodyColor:'#5f6368',borderColor:'#dadce0',borderWidth:1,padding:8}},scales:{x:{grid:{display:false},ticks:{color:'#5f6368',font:{size:11}}},y:{grid:{color:'#f1f3f4'},ticks:{color:'#80868b',font:{size:10}},min:0,max:100}}}});
+  new Chart(document.getElementById('radC'),{type:'radar',data:{labels:CATS,datasets:P.map(p=>({label:p.l,data:CATS.map(cat=>catScore(p.l,cat)),borderColor:C[p.l],backgroundColor:CL[p.l]+'60',borderWidth:p.m?2.5:1.5,pointBackgroundColor:C[p.l],pointRadius:p.m?4:2}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',titleColor:'#202124',bodyColor:'#5f6368',borderColor:'#dadce0',borderWidth:1,padding:8}},scales:{r:{grid:{color:'#e8eaed'},angleLines:{color:'#e8eaed'},pointLabels:{color:'#5f6368',font:{size:9}},ticks:{display:false},min:0,max:100}}}});
+  document.getElementById('catbars').innerHTML=CATS.map(cat=>'<div><div class="cat-title">'+cat+'</div>'+P.map(p=>{const sc=catScore(p.l,cat);return'<div class="cbar"><div class="cbl '+(p.m?'mine':'')+'" style="'+(p.m?'color:'+C[p.l]:'')+'">'+p.l+'</div><div class="cbtrack"><div class="cbfill" style="width:'+sc+'%;background:'+C[p.l]+'"></div></div><div class="cbval">'+sc+'</div></div>';}).join('')+'</div>').join('');
+  document.getElementById('mxhead').innerHTML='<tr><th>Feature</th>'+P.map(p=>'<th class="'+(p.m?'mh':'')+'" style="min-width:80px"><span style="display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:'+C[p.l]+';display:inline-block"></span>'+p.l+'</span></th>').join('')+'</tr>';
+  let mb='';
+  CATS.forEach(cat=>{
+    mb+='<tr><td class="cat" colspan="'+(P.length+1)+'">'+cat+'</td></tr>';
+    F.filter(f=>f.c===cat).forEach(feat=>{
+      mb+='<tr><td class="feat">'+feat.n+'</td>';
+      P.forEach(p=>{const sc=feat.s[p.l]||0;mb+='<td class="'+(p.m?'mc':'')+'"><div class="dots">'+[1,2,3,4,5].map(i=>'<div class="d" style="'+(i<=sc?'background:'+C[p.l]:'')+'"></div>').join('')+'<span class="sn">'+sc+'/5</span></div></td>';});
+      mb+='</tr>';
+    });
+  });
+  document.getElementById('mxbody').innerHTML=mb;
+  document.getElementById('pgrid').innerHTML=PRICING.map(pd=>'<div class="pc '+(pd.m?'mine':'')+'"><div class="pc-co"><div style="width:6px;height:6px;border-radius:50%;background:'+C[pd.co]+'"></div>'+pd.co+'</div><div class="pc-model">'+pd.model+'</div>'+pd.plans.map(pl=>'<div class="plan"><div class="plan-name">'+pl.n+'</div><span class="plan-price">'+pl.p+'</span><span class="plan-period">'+pl.per+'</span><div class="plan-note">'+pl.note+'</div></div>').join('')+'</div>').join('');
+  document.getElementById('ggrid').innerHTML=GAPS.map(g=>'<div class="gc '+g.pr+'"><div class="gc-top"><div class="gc-icon" style="background:'+(g.pr==='high'?'#fce8e6':g.pr==='medium'?'#fef7e0':'#e6f4ea')+'">'+g.ic+'</div><div><span class="gc-tag '+g.pr+'">'+g.pr+'</span><div class="gc-title">'+g.t+'</div></div></div><div class="gc-body">'+g.b+'</div></div>').join('');
+  document.getElementById('tgrid').innerHTML=TONE.map(t=>'<div class="tc '+(t.m?'mine':'')+'"><div class="tc-co"><div style="width:6px;height:6px;border-radius:50%;background:'+C[t.co]+'"></div>'+t.co+'</div><div class="tc-vp">'+t.vp+'</div><div class="tc-aud">'+t.aud+'</div><div class="srow"><div class="slbls"><span>Casual</span><span>Formal</span></div><div class="strk"><div class="sfill" style="width:'+t.f+'%;background:'+C[t.co]+'"></div></div></div><div class="srow"><div class="slbls"><span>Accessible</span><span>Technical</span></div><div class="strk"><div class="sfill" style="width:'+t.t+'%;background:'+C[t.co]+'"></div></div></div><div class="tags">'+t.tags.map(tg=>'<span class="tag">'+tg+'</span>').join('')+'</div></div>').join('');
+}
+function genMd(){
+  let md='# Competitive analysis — OneTable\n\n';
+  const ranked=[...P].map(p=>({...p,s:overall(p.l)})).sort((a,b)=>b.s-a.s);
+  md+='## Overall scores\n\n| Product | Score | Rank |\n|---|---|---|\n';
+  ranked.forEach((p,i)=>md+='| '+p.l+(p.m?' *(yours)*':'')+' | '+p.s+'/100 | #'+(i+1)+' |\n');
+  md+='\n## Feature matrix\n\n| Feature | '+P.map(p=>p.l).join(' | ')+' |\n|---|'+P.map(()=>'---').join('|')+'|\n';
+  F.forEach(f=>md+='| '+f.n+' | '+P.map(p=>(f.s[p.l]||0)+'/5').join(' | ')+' |\n');
+  md+='\n## Gaps\n\n';
+  GAPS.forEach(g=>md+='### ['+g.pr.toUpperCase()+'] '+g.t+'\n'+g.b+'\n\n');
+  return md;
+}
+function exportMd(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([genMd()],{type:'text/markdown'}));a.download='onetable-competitive-analysis.md';a.click();}
+function copyNotion(){navigator.clipboard.writeText(genMd()).then(()=>{const b=document.getElementById('copybtn');const o=b.innerHTML;b.innerHTML='Copied!';setTimeout(()=>b.innerHTML=o,2000);});}
+init();
+</script>
+</body>
 </html>
